@@ -4,7 +4,6 @@ import java.util.List;
 
 public class SearchingSorting {
 
-    /* ==================== LINEAR SEARCH ==================== */
     public static void linearSearchPatientsByName(List<Patient> patients, String name) {
         name = name.toLowerCase();
         boolean found = false;
@@ -33,7 +32,6 @@ public class SearchingSorting {
         if (!found) System.out.println("No doctors found with name containing: " + name);
     }
 
-    /* ==================== BINARY SEARCH ==================== */
     public static Patient binarySearchPatientById(List<Patient> patients, String id) {
         int left = 0, right = patients.size() - 1;
         while (left <= right) {
@@ -60,7 +58,6 @@ public class SearchingSorting {
         return null;
     }
 
-    /* ==================== BUBBLE SORT ==================== */
     public static void bubbleSortPatientsById(List<Patient> patients) {
         int n = patients.size();
         int comparisons = 0;
@@ -97,7 +94,6 @@ public class SearchingSorting {
         System.out.println("Bubble sort doctors completed with " + comparisons + " comparisons.");
     }
 
-    /* ==================== QUICK SORT ==================== */
     public static void quickSortPatientsByName(List<Patient> patients) {
         quickSortPatientsByName(patients, 0, patients.size() - 1);
     }

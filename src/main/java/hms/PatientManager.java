@@ -103,7 +103,6 @@ public class PatientManager {
             if (parts.length >= 2) {
                 Patient selected = findPatientById(parts[1]);
                 if (selected != null) {
-                    // Use your existing detailed view method
                     System.out.println(selected.toFullProfileString());
                 } else {
                     System.out.println("Patient not found.");

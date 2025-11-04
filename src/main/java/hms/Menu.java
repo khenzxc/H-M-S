@@ -7,11 +7,14 @@ public class Menu {
     private DoctorManager doctorManager;
     private PatientManager patientManager;
     private AppointmentManager appointmentManager;
+    private TreatmentRecordManager treatmentManager;
 
-    public Menu(DoctorManager doctorManager, PatientManager patientManager, AppointmentManager appointmentManager) {
+    public Menu(DoctorManager doctorManager, PatientManager patientManager, AppointmentManager appointmentManager,
+            TreatmentRecordManager treatmentManager) {
         this.doctorManager = doctorManager;
         this.patientManager = patientManager;
         this.appointmentManager = appointmentManager;
+        this.treatmentManager = treatmentManager;
     }
 
     public void showMainMenu() {
@@ -20,22 +23,24 @@ public class Menu {
             System.out.println("[1] Patient Management");
             System.out.println("[2] Doctor Management");
             System.out.println("[3] Appointment Scheduling");
-            System.out.println("[4] Reports & Summaries");
-            System.out.println("[5] Search & Sort Patients/Doctors"); 
-            System.out.println("[0] Exit");
+            System.out.println("[4] Treatment Records & History");
+            System.out.println("[5] Reports & Summaries");
+            System.out.println("[6] Search & Sort Patients/Doctors");
             System.out.print("Select option: ");
             String choice = sc.nextLine();
 
             switch (choice) {
+
                 case "1" -> patientMenu();
                 case "2" -> doctorMenu();
                 case "3" -> appointmentMenu();
-                case "5" -> searchSortMenu();
+                case "4" -> treatmentMenu();
+                case "6" -> searchSortMenu();
                 case "0" -> {
                     System.out.println("Exiting system... Goodbye!");
                     return;
                 }
-                default -> System.out.println("⚠️ Invalid choice. Try again.");
+                default -> System.out.println("Invalid choice. Try again.");
             }
         }
     }
@@ -59,8 +64,10 @@ public class Menu {
                 case "3" -> patientManager.viewSinglePatient();
                 case "4" -> patientManager.updatePatient();
                 case "5" -> patientManager.deletePatient();
-                case "0" -> { return; }
-                default -> System.out.println("⚠️ Invalid input!");
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input!");
             }
         }
     }
@@ -82,8 +89,10 @@ public class Menu {
                 case "2" -> doctorManager.viewAllDoctors();
                 case "3" -> doctorManager.editDoctor();
                 case "4" -> doctorManager.deleteDoctor();
-                case "0" -> { return; }
-                default -> System.out.println("⚠️ Invalid input!");
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input!");
             }
         }
     }
@@ -109,108 +118,136 @@ public class Menu {
                 case "4" -> appointmentManager.viewAllAppointments();
                 case "5" -> appointmentManager.cancelAppointment();
                 case "6" -> appointmentManager.rescheduleAppointment();
-                case "0" -> { return; }
-                default -> System.out.println("⚠️ Invalid input!");
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input!");
             }
         }
     }
-private void searchSortMenu() {
-    while (true) {
-        System.out.println("\n--- SEARCH & SORT ---");
-        System.out.println("[1] Patients");
-        System.out.println("[2] Doctors");
-        System.out.println("[0] Back to Main Menu");
-        System.out.print("Select option: ");
-        String choice = sc.nextLine();
 
-        switch (choice) {
-            case "1" -> patientSearchSortMenu();
-            case "2" -> doctorSearchSortMenu();
-            case "0" -> { return; }
-            default -> System.out.println("⚠️ Invalid input! Please select 0, 1, or 2.");
+    private void searchSortMenu() {
+        while (true) {
+            System.out.println("\n--- SEARCH & SORT ---");
+            System.out.println("[1] Patients");
+            System.out.println("[2] Doctors");
+            System.out.println("[0] Back to Main Menu");
+            System.out.print("Select option: ");
+            String choice = sc.nextLine();
+
+            switch (choice) {
+                case "1" -> patientSearchSortMenu();
+                case "2" -> doctorSearchSortMenu();
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input! Please select 0, 1, or 2.");
+            }
         }
     }
-}
 
-private void patientSearchSortMenu() {
-    while (true) {
-        System.out.println("\n--- PATIENT SEARCH & SORT ---");
-        System.out.println("[1] Linear Search by Name");
-        System.out.println("[2] Binary Search by ID");
-        System.out.println("[3] Bubble Sort by ID");
-        System.out.println("[4] Quick Sort by Name");
-        System.out.println("[0] Back");
-        System.out.print("Select option: ");
-        String choice = sc.nextLine();
+    private void patientSearchSortMenu() {
+        while (true) {
+            System.out.println("\n--- PATIENT SEARCH & SORT ---");
+            System.out.println("[1] Linear Search by Name");
+            System.out.println("[2] Binary Search by ID");
+            System.out.println("[3] Bubble Sort by ID");
+            System.out.println("[4] Quick Sort by Name");
+            System.out.println("[0] Back");
+            System.out.print("Select option: ");
+            String choice = sc.nextLine();
 
-        switch (choice) {
-            case "1" -> {
-                System.out.print("Enter patient name to search: ");
-                String name = sc.nextLine();
-                SearchingSorting.linearSearchPatientsByName(patientManager.getPatientList(), name);
+            switch (choice) {
+                case "1" -> {
+                    System.out.print("Enter patient name to search: ");
+                    String name = sc.nextLine();
+                    SearchingSorting.linearSearchPatientsByName(patientManager.getPatientList(), name);
+                }
+                case "2" -> {
+                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList()); // ensure sorted
+                    System.out.print("Enter patient ID to search: ");
+                    String id = sc.nextLine();
+                    Patient p = SearchingSorting.binarySearchPatientById(patientManager.getPatientList(), id);
+                    System.out.println(p != null ? p : "Patient not found with ID: " + id);
+                }
+                case "3" -> {
+                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList());
+                    System.out.println("Patients after Bubble Sort by ID:");
+                    patientManager.viewAllPatients();
+                }
+                case "4" -> {
+                    SearchingSorting.quickSortPatientsByName(patientManager.getPatientList());
+                    System.out.println("Patients after Quick Sort by Name:");
+                    patientManager.viewAllPatients();
+                }
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input! Try again.");
             }
-            case "2" -> {
-                SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList()); // ensure sorted
-                System.out.print("Enter patient ID to search: ");
-                String id = sc.nextLine();
-                Patient p = SearchingSorting.binarySearchPatientById(patientManager.getPatientList(), id);
-                System.out.println(p != null ? p : "Patient not found with ID: " + id);
-            }
-            case "3" -> {
-                SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList());
-                System.out.println("Patients after Bubble Sort by ID:");
-                patientManager.viewAllPatients();
-            }
-            case "4" -> {
-                SearchingSorting.quickSortPatientsByName(patientManager.getPatientList());
-                System.out.println("Patients after Quick Sort by Name:");
-                patientManager.viewAllPatients();
-            }
-            case "0" -> { return; }
-            default -> System.out.println("⚠️ Invalid input! Try again.");
         }
     }
-}
 
-private void doctorSearchSortMenu() {
-    while (true) {
-        System.out.println("\n--- DOCTOR SEARCH & SORT ---");
-        System.out.println("[1] Linear Search by Name");
-        System.out.println("[2] Binary Search by ID");
-        System.out.println("[3] Bubble Sort by ID");
-        System.out.println("[4] Quick Sort by Name");
-        System.out.println("[0] Back");
-        System.out.print("Select option: ");
-        String choice = sc.nextLine();
+    private void doctorSearchSortMenu() {
+        while (true) {
+            System.out.println("\n--- DOCTOR SEARCH & SORT ---");
+            System.out.println("[1] Linear Search by Name");
+            System.out.println("[2] Binary Search by ID");
+            System.out.println("[3] Bubble Sort by ID");
+            System.out.println("[4] Quick Sort by Name");
+            System.out.println("[0] Back");
+            System.out.print("Select option: ");
+            String choice = sc.nextLine();
 
-        switch (choice) {
-            case "1" -> {
-                System.out.print("Enter doctor name to search: ");
-                String name = sc.nextLine();
-                SearchingSorting.linearSearchDoctorsByName(doctorManager.getDoctorList(), name);
+            switch (choice) {
+                case "1" -> {
+                    System.out.print("Enter doctor name to search: ");
+                    String name = sc.nextLine();
+                    SearchingSorting.linearSearchDoctorsByName(doctorManager.getDoctorList(), name);
+                }
+                case "2" -> {
+                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList()); // ensure sorted
+                    System.out.print("Enter doctor ID to search: ");
+                    String id = sc.nextLine();
+                    Doctor d = SearchingSorting.binarySearchDoctorById(doctorManager.getDoctorList(), id);
+                    System.out.println(d != null ? d : "Doctor not found with ID: " + id);
+                }
+                case "3" -> {
+                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList());
+                    System.out.println("Doctors after Bubble Sort by ID:");
+                    doctorManager.viewAllDoctors();
+                }
+                case "4" -> {
+                    SearchingSorting.quickSortDoctorsByName(doctorManager.getDoctorList());
+                    System.out.println("Doctors after Quick Sort by Name:");
+                    doctorManager.viewAllDoctors();
+                }
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input! Try again.");
             }
-            case "2" -> {
-                SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList()); // ensure sorted
-                System.out.print("Enter doctor ID to search: ");
-                String id = sc.nextLine();
-                Doctor d = SearchingSorting.binarySearchDoctorById(doctorManager.getDoctorList(), id);
-                System.out.println(d != null ? d : "Doctor not found with ID: " + id);
-            }
-            case "3" -> {
-                SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList());
-                System.out.println("Doctors after Bubble Sort by ID:");
-                doctorManager.viewAllDoctors();
-            }
-            case "4" -> {
-                SearchingSorting.quickSortDoctorsByName(doctorManager.getDoctorList());
-                System.out.println("Doctors after Quick Sort by Name:");
-                doctorManager.viewAllDoctors();
-            }
-            case "0" -> { return; }
-            default -> System.out.println("⚠️ Invalid input! Try again.");
         }
     }
-}
 
+    private void treatmentMenu() {
+        while (true) {
+            System.out.println("\n--- TREATMENT RECORDS ---");
+            System.out.println("[1] Add Treatment Record");
+            System.out.println("[2] View Patient Treatment History");
+            System.out.println("[0] Back");
+            System.out.print("Enter choice: ");
+            String c = sc.nextLine();
+
+            switch (c) {
+                case "1" -> treatmentManager.addTreatmentRecord();
+                case "2" -> treatmentManager.viewPatientHistory();
+                case "0" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid input!");
+            }
+        }
+    }
 
 }

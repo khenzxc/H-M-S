@@ -19,9 +19,12 @@ public class Patient {
     private List<String> medicalHistory;
     private int priorityLevel; 
     private boolean active = true;
+    private List<TreatmentRecord> treatmentHistory = new ArrayList<>();
 
     private final LocalDate createdAt;
     private LocalDate updatedAt;
+
+
 
     public Patient(String patientId, String firstName, String lastName, LocalDate dob,
             String gender, String contact, String address,
@@ -118,6 +121,24 @@ public class Patient {
         return updatedAt;
     }
 
+    
+    public void addTreatmentRecord(TreatmentRecord record) {
+        treatmentHistory.add(record);
+    }
+
+    public void addToMedicalHistory(String diagnosis) {
+    if (diagnosis != null && !diagnosis.isBlank()) {
+        if (medicalHistory == null) {
+            medicalHistory = new ArrayList<>();
+        }
+        medicalHistory.add(diagnosis);
+        updatedAt = LocalDate.now();
+    }
+}
+
+    public List<TreatmentRecord> getTreatmentHistory() {
+        return treatmentHistory;
+    }
     public void setFirstName(String firstName) {
         this.firstName = firstName;
         updateTimestamp();
@@ -192,7 +213,6 @@ public class Patient {
                 " | Priority: " + prio;
     }
 
-    // Optional detailed profile view
     public String toFullProfileString() {
         return this.toString() +
                 "\nDate of Birth: " + dob + 
