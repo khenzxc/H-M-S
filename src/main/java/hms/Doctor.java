@@ -9,7 +9,7 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
-    private List<String> schedule = new ArrayList<>(); // e.g. ["MON 12:00-18:00", "WED 07:00-12:00"]
+    private List<String> schedule = new ArrayList<>(); //["MON 12:00-18:00", "WED 07:00-12:00"]
     private boolean active = true;
 
     // Queues per doctor
@@ -20,38 +20,81 @@ public class Doctor {
 
     private List<Appointment> appointments = new ArrayList<>();
 
- public Doctor(String id, String fn, String ln, String spec) {
-    this.doctorId = id;
-    this.firstName = fn;
-    this.lastName = ln;
-    this.specialization = spec;
+    public Doctor(String id, String fn, String ln, String spec) {
+        this.doctorId = id;
+        this.firstName = fn;
+        this.lastName = ln;
+        this.specialization = spec;
 
-    // Emergency queue sorted by appointment datetime (earliest first)
-    this.emergencyQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
+        // Emergency queue sorted by appointment datetime (earliest first)
+        this.emergencyQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
 
-    // Normal queue also sorted by appointment datetime
-    this.normalQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
+        // Normal queue also sorted by appointment datetime
+        this.normalQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
 
-    this.appointments = new ArrayList<>();
-}
+        this.appointments = new ArrayList<>();
+    }
 
     /* ---------------------- Getters & Setters ---------------------- */
-    public String getDoctorId() { return doctorId; }
-    public String getFullName() { return firstName + " " + lastName; }
-    public String getLastName() { return lastName; }
-    public String getFirstName() { return firstName; }
-    public String getSpecialization() { return specialization; }
-    public List<String> getSchedule() { return schedule; }
-    public boolean isActive() { return active; }
-    public void deactivate() { this.active = false; }
-    public Queue<Appointment> getNormalQueue() { return normalQueue; }
-    public PriorityQueue<Appointment> getEmergencyQueue() { return emergencyQueue; }
-    public List<Appointment> getAppointments() { return appointments; }
+    public String getDoctorId() {
+        return doctorId;
+    }
 
-    public void setFirstName(String fn) { this.firstName = fn; }
-    public void setLastName(String ln) { this.lastName = ln; }
-    public void setSpecialization(String spec) { this.specialization = spec; }
-    public void clearSchedule() { schedule.clear(); }
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public List<String> getSchedule() {
+        return schedule;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public Queue<Appointment> getNormalQueue() {
+        return normalQueue;
+    }
+
+    public PriorityQueue<Appointment> getEmergencyQueue() {
+        return emergencyQueue;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setFirstName(String fn) {
+        this.firstName = fn;
+    }
+
+    public void setLastName(String ln) {
+        this.lastName = ln;
+    }
+
+    public void setSpecialization(String spec) {
+        this.specialization = spec;
+    }
+
+    public void clearSchedule() {
+        schedule.clear();
+    }
 
     /* ---------------------- Schedule Handling ---------------------- */
     public void addSchedule(String scheduleText) {
@@ -67,79 +110,83 @@ public class Doctor {
         schedule.add(entry);
     }
 
-        public List<String> generateTimeSlots() {
-            List<String> slots = new ArrayList<>();
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+    public List<String> generateTimeSlots() {
+        List<String> slots = new ArrayList<>();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 
-            for (String entry : schedule) {
-                try {
-                    String[] parts = entry.split(" ");
-                    String dayStr = parts[0];
-                    String[] times = parts[1].split("-");
-                    LocalTime start = LocalTime.parse(times[0], fmt);
-                    LocalTime end = LocalTime.parse(times[1], fmt);
+        for (String entry : schedule) {
+            try {
+                String[] parts = entry.split(" ");
+                String dayStr = parts[0];
+                String[] times = parts[1].split("-");
+                LocalTime start = LocalTime.parse(times[0], fmt);
+                LocalTime end = LocalTime.parse(times[1], fmt);
 
-                    LocalTime t = start;
-                    while (!t.plusMinutes(45).isAfter(end)) {
-                        String slot = dayStr + " " + t.toString() + "-" + t.plusMinutes(45).toString();
-                        slots.add(slot);
-                        t = t.plusMinutes(60);
-                    }
-                } catch (Exception e) {
-                    System.out.println("Invalid schedule: " + entry);
+                LocalTime t = start;
+                while (!t.plusMinutes(45).isAfter(end)) {
+                    String slot = dayStr + " " + t.toString() + "-" + t.plusMinutes(45).toString();
+                    slots.add(slot);
+                    t = t.plusMinutes(60);
                 }
+            } catch (Exception e) {
+                System.out.println("Invalid schedule: " + entry);
             }
-
-            return slots;
         }
 
-
-public List<LocalTime> getAvailableSlots(LocalDate date) {
-    List<LocalTime> available = new ArrayList<>();
-    DayOfWeek day = date.getDayOfWeek();
-    String dayStr = day.name().substring(0, 3);
-    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
-
-    for (String entry : schedule) {
-        if (!entry.startsWith(dayStr)) continue;
-
-        String[] times = entry.split(" ")[1].split("-");
-        LocalTime start = LocalTime.parse(times[0], fmt);
-        LocalTime end = LocalTime.parse(times[1], fmt);
-
-        LocalTime t = start;
-        while (!t.plusMinutes(45).isAfter(end)) {
-            boolean booked = false;
-            for (Appointment a : appointments) {
-                if (a.getDateTime().toLocalDate().equals(date)
-                        && a.getDateTime().toLocalTime().equals(t)) {
-                    booked = true;
-                    break;
-                }
-            }
-            if (!booked) available.add(t);
-            t = t.plusMinutes(60); // 45 min + 15 min break
-        }
+        return slots;
     }
 
-    return available;
-}
+    public List<LocalTime> getAvailableSlots(LocalDate date) {
+        List<LocalTime> available = new ArrayList<>();
+        DayOfWeek day = date.getDayOfWeek();
+        String dayStr = day.name().substring(0, 3);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 
+        for (String entry : schedule) {
+            if (!entry.startsWith(dayStr))
+                continue;
+
+            String[] times = entry.split(" ")[1].split("-");
+            LocalTime start = LocalTime.parse(times[0], fmt);
+            LocalTime end = LocalTime.parse(times[1], fmt);
+
+            LocalTime t = start;
+            while (!t.plusMinutes(45).isAfter(end)) {
+                boolean booked = false;
+                for (Appointment a : appointments) {
+                    if (a.getDateTime().toLocalDate().equals(date)
+                            && a.getDateTime().toLocalTime().equals(t)) {
+                        booked = true;
+                        break;
+                    }
+                }
+                if (!booked)
+                    available.add(t);
+                t = t.plusMinutes(60); // 45 min + 15 min break
+            }
+        }
+
+        return available;
+    }
 
     /* ---------------------- Appointment Queues ---------------------- */
     public void enqueueAppointment(Appointment a) {
         appointments.add(a);
-        if (a.isPriority()) emergencyQueue.add(a);
-        else normalQueue.add(a);
+        if (a.isPriority())
+            emergencyQueue.add(a);
+        else
+            normalQueue.add(a);
     }
 
     public Appointment dequeueNextAppointment() {
-        if (!emergencyQueue.isEmpty()) return emergencyQueue.poll();
+        if (!emergencyQueue.isEmpty())
+            return emergencyQueue.poll();
         return normalQueue.poll();
     }
 
     public Appointment peekNextAppointment() {
-        if (!emergencyQueue.isEmpty()) return emergencyQueue.peek();
+        if (!emergencyQueue.isEmpty())
+            return emergencyQueue.peek();
         return normalQueue.peek();
     }
 
@@ -149,12 +196,22 @@ public List<LocalTime> getAvailableSlots(LocalDate date) {
 
     /* ---------------------- Appointment Removal ---------------------- */
     public boolean removeAppointment(Appointment a) {
-        if (a == null) return false;
+        if (a == null)
+            return false;
 
         boolean removed = false;
-        if (normalQueue.contains(a)) { normalQueue.remove(a); removed = true; }
-        if (emergencyQueue.contains(a)) { emergencyQueue.remove(a); removed = true; }
-        if (appointments.contains(a)) { appointments.remove(a); removed = true; }
+        if (normalQueue.contains(a)) {
+            normalQueue.remove(a);
+            removed = true;
+        }
+        if (emergencyQueue.contains(a)) {
+            emergencyQueue.remove(a);
+            removed = true;
+        }
+        if (appointments.contains(a)) {
+            appointments.remove(a);
+            removed = true;
+        }
 
         return removed;
     }
@@ -165,22 +222,30 @@ public List<LocalTime> getAvailableSlots(LocalDate date) {
         int normalSize = normalQueue.size();
         for (int i = 0; i < normalSize; i++) {
             Appointment a = normalQueue.poll();
-            if (!a.getAppointmentId().equals(id)) normalQueue.add(a);
-            else removed = true;
+            if (!a.getAppointmentId().equals(id))
+                normalQueue.add(a);
+            else
+                removed = true;
         }
 
         // Emergency Queue
         int emergencySize = emergencyQueue.size();
         for (int i = 0; i < emergencySize; i++) {
             Appointment a = emergencyQueue.poll();
-            if (!a.getAppointmentId().equals(id)) emergencyQueue.add(a);
-            else removed = true;
+            if (!a.getAppointmentId().equals(id))
+                emergencyQueue.add(a);
+            else
+                removed = true;
         }
 
         // Appointments list
         for (int i = 0; i < appointments.size(); i++) {
             Appointment a = appointments.get(i);
-            if (a.getAppointmentId().equals(id)) { appointments.remove(i); removed = true; break; }
+            if (a.getAppointmentId().equals(id)) {
+                appointments.remove(i);
+                removed = true;
+                break;
+            }
         }
 
         return removed;
@@ -196,33 +261,33 @@ public List<LocalTime> getAvailableSlots(LocalDate date) {
     }
 
     public String getNextAppointmentWithQueue() {
-    if (!emergencyQueue.isEmpty()) {
-        Appointment next = emergencyQueue.peek();
-        int position = getQueuePosition(next);
-        return "Queue #" + position + " | " + next;
-    } else if (!normalQueue.isEmpty()) {
-        Appointment next = normalQueue.peek();
-        int position = getQueuePosition(next);
-        return "Queue #" + position + " | " + next;
-    } else {
-        return "No pending appointments.";
-    }
-}
-
-// Get queue number for an appointment
-private int getQueuePosition(Appointment appt) {
-    // Combine all appointments in both queues
-    List<Appointment> allPending = new ArrayList<>();
-    allPending.addAll(emergencyQueue);
-    allPending.addAll(normalQueue);
-    // Sort by dateTime ascending
-    allPending.sort(Comparator.comparing(Appointment::getDateTime));
-    for (int i = 0; i < allPending.size(); i++) {
-        if (allPending.get(i).equals(appt)) {
-            return i + 1; // Queue number starts at 1
+        if (!emergencyQueue.isEmpty()) {
+            Appointment next = emergencyQueue.peek();
+            int position = getQueuePosition(next);
+            return "Queue #" + position + " | " + next;
+        } else if (!normalQueue.isEmpty()) {
+            Appointment next = normalQueue.peek();
+            int position = getQueuePosition(next);
+            return "Queue #" + position + " | " + next;
+        } else {
+            return "No pending appointments.";
         }
     }
-    return -1; // not found
-}
+
+    // Get queue number for an appointment
+    private int getQueuePosition(Appointment appt) {
+        // Combine all appointments in both queues
+        List<Appointment> allPending = new ArrayList<>();
+        allPending.addAll(emergencyQueue);
+        allPending.addAll(normalQueue);
+        // Sort by dateTime ascending
+        allPending.sort(Comparator.comparing(Appointment::getDateTime));
+        for (int i = 0; i < allPending.size(); i++) {
+            if (allPending.get(i).equals(appt)) {
+                return i + 1; // Queue number starts at 1
+            }
+        }
+        return -1; // not found
+    }
 
 }

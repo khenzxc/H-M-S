@@ -14,7 +14,6 @@ public class TreatmentRecordManager {
         this.patientManager = patientManager;
     }
 
-    // helper: find patient by id using PatientManager's list
     private Patient findPatientById(String patientId) {
         List<Patient> list = patientManager.getPatientList();
         if (list == null)
@@ -40,25 +39,39 @@ public class TreatmentRecordManager {
         System.out.print("Enter Diagnosis: ");
         String diagnosis = sc.nextLine().trim();
 
-        System.out.print("Enter Medication/Prescription: ");
-        String medication = sc.nextLine().trim();
+        System.out.print("Enter Medications (comma-separated): ");
+        String medsInput = sc.nextLine().trim();
+
+        // Convert comma-separated string into a list
+        List<String> medications = new ArrayList<>();
+        if (!medsInput.isBlank()) {
+            for (String med : medsInput.split(",")) {
+                medications.add(med.trim());
+            }
+        }
 
         String recordId = "TR" + (records.size() + 1);
         LocalDate date = LocalDate.now();
 
-        // Create treatment record
-        TreatmentRecord record = new TreatmentRecord(recordId, patientId, date, diagnosis, medication);
+        //Create treatment record with list of meds
+        TreatmentRecord record = new TreatmentRecord(recordId, patientId, date, diagnosis, medications);
         records.add(record);
 
-        // --- ✅ Update patient history ---
-        patient.getTreatmentHistory().add(record); // add record to treatment history
-        patient.addToMedicalHistory(diagnosis); // append diagnosis to medical history
+        // Update patient data
+        patient.getTreatmentHistory().add(record);
+        patient.addToMedicalHistory(diagnosis);
 
-        System.out.println("✅ Treatment record added for " + patient.getFullName() +
-                " (Record ID: " + recordId + ")");
+        // Replace patient’s current meds with new list (clear old)
+        patient.setCurrentMedications(new ArrayList<>(medications));
+
+        System.out.println("\nTreatment record added successfully!");
+        System.out.println("Patient: " + patient.getFullName() + " (ID: " + patientId + ")");
+        System.out.println("Diagnosis: " + diagnosis);
+        System.out.println(
+                "New Current Medications: " + (medications.isEmpty() ? "None" : String.join(", ", medications)));
+        System.out.println("Record ID: " + recordId + " | Date: " + date);
     }
 
-    // View history for a patient (newest first)
     public void viewPatientHistory() {
         System.out.print("Enter Patient ID: ");
         String patientId = sc.nextLine().trim();
@@ -72,7 +85,6 @@ public class TreatmentRecordManager {
         boolean found = false;
         System.out.println("\n=== Treatment History for " + patient.getFullName() + " ===");
 
-        // iterate in reverse to show newest first
         for (int i = records.size() - 1; i >= 0; i--) {
             TreatmentRecord r = records.get(i);
             if (r.getPatientId().equalsIgnoreCase(patientId)) {
@@ -86,7 +98,6 @@ public class TreatmentRecordManager {
         }
     }
 
-    // getter for all records (if you need it)
     public List<TreatmentRecord> getAllRecords() {
         return records;
     }

@@ -17,14 +17,12 @@ public class Patient {
     private List<String> allergies;
     private List<String> currentMedications;
     private List<String> medicalHistory;
-    private int priorityLevel; 
+    private int priorityLevel;
     private boolean active = true;
     private List<TreatmentRecord> treatmentHistory = new ArrayList<>();
 
     private final LocalDate createdAt;
     private LocalDate updatedAt;
-
-
 
     public Patient(String patientId, String firstName, String lastName, LocalDate dob,
             String gender, String contact, String address,
@@ -121,24 +119,10 @@ public class Patient {
         return updatedAt;
     }
 
-    
-    public void addTreatmentRecord(TreatmentRecord record) {
-        treatmentHistory.add(record);
-    }
-
-    public void addToMedicalHistory(String diagnosis) {
-    if (diagnosis != null && !diagnosis.isBlank()) {
-        if (medicalHistory == null) {
-            medicalHistory = new ArrayList<>();
-        }
-        medicalHistory.add(diagnosis);
-        updatedAt = LocalDate.now();
-    }
-}
-
     public List<TreatmentRecord> getTreatmentHistory() {
         return treatmentHistory;
     }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
         updateTimestamp();
@@ -189,6 +173,20 @@ public class Patient {
         updateTimestamp();
     }
 
+    public void addTreatmentRecord(TreatmentRecord record) {
+        treatmentHistory.add(record);
+    }
+
+    public void addToMedicalHistory(String diagnosis) {
+        if (diagnosis != null && !diagnosis.isBlank()) {
+            if (medicalHistory == null) {
+                medicalHistory = new ArrayList<>();
+            }
+            medicalHistory.add(diagnosis);
+            updatedAt = LocalDate.now();
+        }
+    }
+
     public void setPriorityLevel(int priorityLevel) {
         if (priorityLevel == 0 || priorityLevel == 1)
             this.priorityLevel = priorityLevel;
@@ -215,7 +213,7 @@ public class Patient {
 
     public String toFullProfileString() {
         return this.toString() +
-                "\nDate of Birth: " + dob + 
+                "\nDate of Birth: " + dob +
                 "\nAllergies: " + (allergies.isEmpty() ? "None" : allergies) +
                 "\nCurrent Medications: " + (currentMedications.isEmpty() ? "None" : currentMedications) +
                 "\nMedical History: " + (medicalHistory.isEmpty() ? "None" : medicalHistory) +

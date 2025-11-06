@@ -3,10 +3,6 @@ package hms;
 import java.time.*;
 import java.util.*;
 
-/**
- * DoctorManager handles doctor registration, listing, and queue integration.
- * Each doctor will later hold their own normal and emergency queues.
- */
 public class DoctorManager {
     private LinkedList<Doctor> doctorList;
     private int nextId = 1;
@@ -16,9 +12,6 @@ public class DoctorManager {
         doctorList = new LinkedList<>();
     }
 
-    /* ---------------------------------------------------
-       REGISTER DOCTOR
-    --------------------------------------------------- */
     public void addDoctor() {
         System.out.println("\n--- Register Doctor ---");
         System.out.print("First name: ");
@@ -45,22 +38,27 @@ public class DoctorManager {
         System.out.println(doc);
     }
 
-    /* ---------------------------------------------------
-       PARSE SCHEDULE INPUT
-       Example input: MON 12:00-18:00, WED 07:00-12:00
-    --------------------------------------------------- */
+    /*
+     * ---------------------------------------------------
+     * PARSE SCHEDULE INPUT
+     * Example input: MON 12:00-18:00, WED 07:00-12:00
+     * ---------------------------------------------------
+     */
     private void parseSchedule(String input, Doctor doc) {
         String[] parts = input.split(",");
         for (String p : parts) {
             p = p.trim();
-            if (p.isEmpty()) continue;
+            if (p.isEmpty())
+                continue;
 
             String[] dayTime = p.split(" ");
-            if (dayTime.length != 2) continue;
+            if (dayTime.length != 2)
+                continue;
 
             String day = dayTime[0].trim().toUpperCase();
             String[] times = dayTime[1].split("-");
-            if (times.length != 2) continue;
+            if (times.length != 2)
+                continue;
 
             try {
                 LocalTime start = LocalTime.parse(times[0]);
@@ -76,9 +74,6 @@ public class DoctorManager {
         }
     }
 
-    /* ---------------------------------------------------
-       VIEW ALL DOCTORS
-    --------------------------------------------------- */
     public void viewAllDoctors() {
         if (doctorList.isEmpty()) {
             System.out.println("No doctors found.");
@@ -90,23 +85,18 @@ public class DoctorManager {
         }
     }
 
-    /* ---------------------------------------------------
-       FIND / GETTERS
-    --------------------------------------------------- */
     public LinkedList<Doctor> getDoctorList() {
         return doctorList;
     }
 
     public Doctor findDoctorById(String id) {
         for (Doctor d : doctorList) {
-            if (d.getDoctorId().equalsIgnoreCase(id)) return d;
+            if (d.getDoctorId().equalsIgnoreCase(id))
+                return d;
         }
         return null;
     }
 
-        /* ---------------------------------------------------
-       EDIT DOCTOR
-    --------------------------------------------------- */
     public void editDoctor() {
         System.out.print("Enter Doctor ID to edit: ");
         String id = sc.nextLine().trim();
@@ -124,7 +114,7 @@ public class DoctorManager {
             found.setFirstName(fn);
         }
 
-        System.out.print("New Last Name (leave blank to keep \"" + found.getLastName()  + "\"): ");
+        System.out.print("New Last Name (leave blank to keep \"" + found.getLastName() + "\"): ");
         String ln = sc.nextLine().trim();
         if (!ln.isEmpty()) {
             found.setLastName(ln);
@@ -144,19 +134,16 @@ public class DoctorManager {
             parseSchedule(sched, found);
         }
 
-        System.out.println("✅ Doctor information updated successfully!");
+        System.out.println("Doctor information updated successfully!");
     }
 
-    /* ---------------------------------------------------
-       DELETE DOCTOR
-    --------------------------------------------------- */
     public void deleteDoctor() {
         System.out.print("Enter Doctor ID to delete: ");
         String id = sc.nextLine().trim();
         Doctor found = findDoctorById(id);
 
         if (found == null) {
-            System.out.println("⚠️ Doctor not found!");
+            System.out.println("Doctor not found!");
             return;
         }
 
@@ -164,49 +151,46 @@ public class DoctorManager {
         String confirm = sc.nextLine().trim();
         if (confirm.equalsIgnoreCase("y")) {
             doctorList.remove(found);
-            System.out.println("🗑️ Doctor deleted successfully!");
+            System.out.println("Doctor deleted successfully!");
         } else {
-            System.out.println("❌ Deletion canceled.");
+            System.out.println("Deletion canceled.");
         }
     }
 
-    /* ---------------------------------------------------
-       DEMO DATA (optional for testing)
-    --------------------------------------------------- */
-public void seedDoctors() {
-    Doctor d1 = new Doctor(String.format("D%04d", nextId++), "Anna", "Santos", "Cardiology");
-    d1.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(11, 0));
-    d1.addSchedule("WED", LocalTime.of(9, 0), LocalTime.of(17, 0));
+    public void seedDoctors() {
+        Doctor d1 = new Doctor(String.format("D%04d", nextId++), "Anna", "Santos", "Cardiology");
+        d1.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(11, 0));
+        d1.addSchedule("WED", LocalTime.of(9, 0), LocalTime.of(17, 0));
 
-    Doctor d2 = new Doctor(String.format("D%04d", nextId++), "Mark", "Reyes", "Pediatrics");
-    d2.addSchedule("TUE", LocalTime.of(10, 0), LocalTime.of(16, 0));
-    d2.addSchedule("THU", LocalTime.of(12, 0), LocalTime.of(18, 0));
+        Doctor d2 = new Doctor(String.format("D%04d", nextId++), "Mark", "Reyes", "Pediatrics");
+        d2.addSchedule("TUE", LocalTime.of(10, 0), LocalTime.of(16, 0));
+        d2.addSchedule("THU", LocalTime.of(12, 0), LocalTime.of(18, 0));
 
-    Doctor d3 = new Doctor(String.format("D%04d", nextId++), "Lea", "Cruz", "Neurology");
-    d3.addSchedule("FRI", LocalTime.of(9, 0), LocalTime.of(17, 0));
-    d3.addSchedule("SAT", LocalTime.of(9, 0), LocalTime.of(12, 0));
+        Doctor d3 = new Doctor(String.format("D%04d", nextId++), "Lea", "Cruz", "Neurology");
+        d3.addSchedule("FRI", LocalTime.of(9, 0), LocalTime.of(17, 0));
+        d3.addSchedule("SAT", LocalTime.of(9, 0), LocalTime.of(12, 0));
 
-    Doctor d4 = new Doctor(String.format("D%04d", nextId++), "Jean Eren", "Fajardo", "Dermatology");
-    d4.addSchedule("MON", LocalTime.of(10, 0), LocalTime.of(15, 0));
-    d4.addSchedule("THU", LocalTime.of(9, 0), LocalTime.of(13, 0));
+        Doctor d4 = new Doctor(String.format("D%04d", nextId++), "Jean Eren", "Fajardo", "Dermatology");
+        d4.addSchedule("MON", LocalTime.of(10, 0), LocalTime.of(15, 0));
+        d4.addSchedule("THU", LocalTime.of(9, 0), LocalTime.of(13, 0));
 
-    Doctor d5 = new Doctor(String.format("D%04d", nextId++), "Rose", "Reyes", "Ophthalmology");
-    d5.addSchedule("TUE", LocalTime.of(9, 0), LocalTime.of(14, 0));
-    d5.addSchedule("FRI", LocalTime.of(12, 0), LocalTime.of(17, 0));
+        Doctor d5 = new Doctor(String.format("D%04d", nextId++), "Rose", "Reyes", "Ophthalmology");
+        d5.addSchedule("TUE", LocalTime.of(9, 0), LocalTime.of(14, 0));
+        d5.addSchedule("FRI", LocalTime.of(12, 0), LocalTime.of(17, 0));
 
-    Doctor d6 = new Doctor(String.format("D%04d", nextId++), "Evelyn", "Samson", "Orthopedics");
-    d6.addSchedule("WED", LocalTime.of(10, 0), LocalTime.of(16, 0));
-    d6.addSchedule("SAT", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        Doctor d6 = new Doctor(String.format("D%04d", nextId++), "Evelyn", "Samson", "Orthopedics");
+        d6.addSchedule("WED", LocalTime.of(10, 0), LocalTime.of(16, 0));
+        d6.addSchedule("SAT", LocalTime.of(8, 0), LocalTime.of(12, 0));
 
-    Doctor d7 = new Doctor(String.format("D%04d", nextId++), "Josephine", "Bayonito", "ENT");
-    d7.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(12, 0));
-    d7.addSchedule("THU", LocalTime.of(13, 0), LocalTime.of(17, 0));
+        Doctor d7 = new Doctor(String.format("D%04d", nextId++), "Josephine", "Bayonito", "ENT");
+        d7.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(12, 0));
+        d7.addSchedule("THU", LocalTime.of(13, 0), LocalTime.of(17, 0));
 
-    Doctor d8 = new Doctor(String.format("D%04d", nextId++), "Jonathan", "Tomacruz", "Gastroenterology");
-    d8.addSchedule("TUE", LocalTime.of(10, 0), LocalTime.of(16, 0));
-    d8.addSchedule("FRI", LocalTime.of(9, 0), LocalTime.of(15, 0));
+        Doctor d8 = new Doctor(String.format("D%04d", nextId++), "Jonathan", "Tomacruz", "Gastroenterology");
+        d8.addSchedule("TUE", LocalTime.of(10, 0), LocalTime.of(16, 0));
+        d8.addSchedule("FRI", LocalTime.of(9, 0), LocalTime.of(15, 0));
 
-    doctorList.addAll(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8));
-}
+        doctorList.addAll(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8));
+    }
 
 }

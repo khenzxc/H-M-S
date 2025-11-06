@@ -2,20 +2,21 @@ package hms;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class TreatmentRecord {
     private String recordId;
     private String patientId;
     private LocalDate date;
     private String diagnosis;
-    private String medication;
+    private List<String> medications; 
 
-    public TreatmentRecord(String recordId, String patientId, LocalDate date, String diagnosis, String medication) {
+    public TreatmentRecord(String recordId, String patientId, LocalDate date, String diagnosis, List<String> medications) {
         this.recordId = recordId;
         this.patientId = patientId;
         this.date = date;
         this.diagnosis = diagnosis;
-        this.medication = medication;
+        this.medications = medications;
     }
 
     public String getRecordId() {
@@ -34,8 +35,8 @@ public class TreatmentRecord {
         return diagnosis;
     }
 
-    public String getMedication() {
-        return medication;
+    public List<String> getMedications() {
+        return medications;
     }
 
     @Override
@@ -45,6 +46,7 @@ public class TreatmentRecord {
                "\nRecord ID: " + recordId +
                "\nDate: " + date.format(fmt) +
                "\nDiagnosis: " + diagnosis +
-               "\nMedication: " + medication + "\n";
+               "\nMedications: " + (medications == null || medications.isEmpty() ? "None" : String.join(", ", medications)) +
+               "\n";
     }
 }

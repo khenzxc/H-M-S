@@ -17,7 +17,6 @@ public class AppointmentManager {
         this.insertionCounter = 0;
     }
 
-    /* ---------------------- 1. Schedule Appointment ---------------------- */
     public void scheduleAppointment() {
 
         // Show patients
@@ -369,6 +368,94 @@ public class AppointmentManager {
                 return p;
         }
         return null;
+    }
+    public void viewDailySchedule() {
+        LocalDate today = LocalDate.now();
+        System.out.println("\n=== DAILY SCHEDULE for " + today + " ===");
+
+        boolean hasAppointments = false;
+
+        for (Doctor doctor : doctorManager.getDoctorList()) {
+            List<Appointment> allAppts = new ArrayList<>();
+            allAppts.addAll(doctor.getEmergencyQueue());
+            allAppts.addAll(doctor.getNormalQueue());
+
+            // Filter appointments for today
+            List<Appointment> todays = new ArrayList<>();
+            for (Appointment a : allAppts) {
+                if (a.getDateTime().toLocalDate().equals(today)) {
+                    todays.add(a);
+                }
+            }
+
+            if (todays.isEmpty())
+                continue;
+            hasAppointments = true;
+
+            System.out.println("\n--- Doctor: " + doctor.getFullName() + " ---");
+            todays.sort(Comparator.comparing(Appointment::getDateTime));
+            for (Appointment appt : todays) {
+                Patient p = findPatientById(appt.getPatientId());
+                System.out.println("• " + appt.getDateTime().toLocalTime()
+                        + " | Patient: " + (p != null ? p.getFullName() : "Unknown")
+                        + " | Emergency: " + (appt.isPriority() ? "Yes" : "No"));
+            }
+        }
+
+        if (!hasAppointments)
+            System.out.println("No appointments scheduled for today.");
+    }
+
+    public void viewUpcomingAppointments() {
+        LocalDate today = LocalDate.now();
+        System.out.print("Enter number of days to view (e.g., 7 for next week): ");
+        int daysAhead;
+        try {
+            daysAhead = Integer.parseInt(sc.nextLine().trim());
+            if (daysAhead <= 0) {
+                System.out.println("Number of days must be greater than 0.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            return;
+        }
+
+        LocalDate endDate = today.plusDays(daysAhead);
+        System.out.println("\n=== UPCOMING APPOINTMENTS (" + today + " to " + endDate + ") ===");
+
+        boolean hasAppointments = false;
+
+        for (Doctor doctor : doctorManager.getDoctorList()) {
+            List<Appointment> allAppts = new ArrayList<>();
+            allAppts.addAll(doctor.getEmergencyQueue());
+            allAppts.addAll(doctor.getNormalQueue());
+
+            // Filter appointments between today and N days later
+            List<Appointment> upcoming = new ArrayList<>();
+            for (Appointment a : allAppts) {
+                LocalDate apptDate = a.getDateTime().toLocalDate();
+                if (!apptDate.isBefore(today) && !apptDate.isAfter(endDate)) {
+                    upcoming.add(a);
+                }
+            }
+
+            if (upcoming.isEmpty())
+                continue;
+            hasAppointments = true;
+
+            System.out.println("\n--- Doctor: " + doctor.getFullName() + " ---");
+            upcoming.sort(Comparator.comparing(Appointment::getDateTime));
+            for (Appointment appt : upcoming) {
+                Patient p = findPatientById(appt.getPatientId());
+                System.out.println("• " + appt.getDateTime()
+                        + " | Patient: " + (p != null ? p.getFullName() : "Unknown")
+                        + " | Emergency: " + (appt.isPriority() ? "Yes" : "No"));
+            }
+        }
+
+        if (!hasAppointments)
+            System.out.println("No appointments found in the next " + daysAhead + " days.");
     }
 
 }

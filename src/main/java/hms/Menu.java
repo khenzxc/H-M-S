@@ -24,7 +24,7 @@ public class Menu {
             System.out.println("[2] Doctor Management");
             System.out.println("[3] Appointment Scheduling");
             System.out.println("[4] Treatment Records & History");
-            System.out.println("[5] Reports & Summaries");
+            System.out.println("[5] Summary and Reports");
             System.out.println("[6] Search & Sort Patients/Doctors");
             System.out.print("Select option: ");
             String choice = sc.nextLine();
@@ -35,6 +35,7 @@ public class Menu {
                 case "2" -> doctorMenu();
                 case "3" -> appointmentMenu();
                 case "4" -> treatmentMenu();
+                case "5" -> reportsMenu();
                 case "6" -> searchSortMenu();
                 case "0" -> {
                     System.out.println("Exiting system... Goodbye!");
@@ -121,6 +122,27 @@ public class Menu {
                 case "0" -> {
                     return;
                 }
+                default -> System.out.println("Invalid input!");
+            }
+        }
+    }
+        private void reportsMenu() {
+        while (true) {
+            System.out.println("\n--- SUMMARY AND REPORTS ---");
+            System.out.println("[1] Patient Masterlist (Filterable)");
+            System.out.println("[2] Appointments Daily Schedule");
+            System.out.println("[3] Appointments Upcoming (Next N Days)");
+            System.out.println("[4] Treatment History per Patient");
+            System.out.println("[0] Back");
+            System.out.print("Enter choice: ");
+            String c = sc.nextLine();
+
+            switch (c) {
+                case "1" -> patientManager.filterPatientMasterlist();
+                case "2" -> appointmentManager.viewDailySchedule();
+                case "3" -> appointmentManager.viewUpcomingAppointments();
+                case "4" -> treatmentManager.viewPatientHistory();
+                case "0" -> { return; }
                 default -> System.out.println("Invalid input!");
             }
         }
