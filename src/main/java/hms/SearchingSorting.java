@@ -15,7 +15,8 @@ public class SearchingSorting {
             }
         }
 
-        if (!found) System.out.println("No patients found with name containing: " + name);
+        if (!found)
+            System.out.println("No patients found with name containing: " + name);
     }
 
     public static void linearSearchDoctorsByName(List<Doctor> doctors, String name) {
@@ -29,7 +30,8 @@ public class SearchingSorting {
             }
         }
 
-        if (!found) System.out.println("No doctors found with name containing: " + name);
+        if (!found)
+            System.out.println("No doctors found with name containing: " + name);
     }
 
     public static Patient binarySearchPatientById(List<Patient> patients, String id) {
@@ -38,9 +40,12 @@ public class SearchingSorting {
             int mid = left + (right - left) / 2;
             String midId = patients.get(mid).getPatientId();
             int cmp = midId.compareTo(id);
-            if (cmp == 0) return patients.get(mid);
-            else if (cmp < 0) left = mid + 1;
-            else right = mid - 1;
+            if (cmp == 0)
+                return patients.get(mid);
+            else if (cmp < 0)
+                left = mid + 1;
+            else
+                right = mid - 1;
         }
         return null;
     }
@@ -51,9 +56,12 @@ public class SearchingSorting {
             int mid = left + (right - left) / 2;
             String midId = doctors.get(mid).getDoctorId();
             int cmp = midId.compareTo(id);
-            if (cmp == 0) return doctors.get(mid);
-            else if (cmp < 0) left = mid + 1;
-            else right = mid - 1;
+            if (cmp == 0)
+                return doctors.get(mid);
+            else if (cmp < 0)
+                left = mid + 1;
+            else
+                right = mid - 1;
         }
         return null;
     }
@@ -92,75 +100,5 @@ public class SearchingSorting {
         }
 
         System.out.println("Bubble sort doctors completed with " + comparisons + " comparisons.");
-    }
-
-    public static void quickSortPatientsByName(List<Patient> patients) {
-        quickSortPatientsByName(patients, 0, patients.size() - 1);
-    }
-
-    private static void quickSortPatientsByName(List<Patient> patients, int low, int high) {
-        if (low < high) {
-            int pi = partitionPatients(patients, low, high);
-            quickSortPatientsByName(patients, low, pi - 1);
-            quickSortPatientsByName(patients, pi + 1, high);
-        }
-    }
-
-    private static int partitionPatients(List<Patient> patients, int low, int high) {
-        String pivot = patients.get(high).getFullName().toLowerCase();
-        int i = low - 1;
-        int comparisons = 0;
-
-        for (int j = low; j < high; j++) {
-            comparisons++;
-            if (patients.get(j).getFullName().toLowerCase().compareTo(pivot) <= 0) {
-                i++;
-                Patient temp = patients.get(i);
-                patients.set(i, patients.get(j));
-                patients.set(j, temp);
-            }
-        }
-
-        Patient temp = patients.get(i + 1);
-        patients.set(i + 1, patients.get(high));
-        patients.set(high, temp);
-
-        System.out.println("Quick sort partition comparisons (patients): " + comparisons);
-        return i + 1;
-    }
-
-    public static void quickSortDoctorsByName(List<Doctor> doctors) {
-        quickSortDoctorsByName(doctors, 0, doctors.size() - 1);
-    }
-
-    private static void quickSortDoctorsByName(List<Doctor> doctors, int low, int high) {
-        if (low < high) {
-            int pi = partitionDoctors(doctors, low, high);
-            quickSortDoctorsByName(doctors, low, pi - 1);
-            quickSortDoctorsByName(doctors, pi + 1, high);
-        }
-    }
-
-    private static int partitionDoctors(List<Doctor> doctors, int low, int high) {
-        String pivot = doctors.get(high).getFullName().toLowerCase();
-        int i = low - 1;
-        int comparisons = 0;
-
-        for (int j = low; j < high; j++) {
-            comparisons++;
-            if (doctors.get(j).getFullName().toLowerCase().compareTo(pivot) <= 0) {
-                i++;
-                Doctor temp = doctors.get(i);
-                doctors.set(i, doctors.get(j));
-                doctors.set(j, temp);
-            }
-        }
-
-        Doctor temp = doctors.get(i + 1);
-        doctors.set(i + 1, doctors.get(high));
-        doctors.set(high, temp);
-
-        System.out.println("Quick sort partition comparisons (doctors): " + comparisons);
-        return i + 1;
     }
 }

@@ -110,32 +110,6 @@ public class Doctor {
         schedule.add(entry);
     }
 
-    public List<String> generateTimeSlots() {
-        List<String> slots = new ArrayList<>();
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
-
-        for (String entry : schedule) {
-            try {
-                String[] parts = entry.split(" ");
-                String dayStr = parts[0];
-                String[] times = parts[1].split("-");
-                LocalTime start = LocalTime.parse(times[0], fmt);
-                LocalTime end = LocalTime.parse(times[1], fmt);
-
-                LocalTime t = start;
-                while (!t.plusMinutes(45).isAfter(end)) {
-                    String slot = dayStr + " " + t.toString() + "-" + t.plusMinutes(45).toString();
-                    slots.add(slot);
-                    t = t.plusMinutes(60);
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid schedule: " + entry);
-            }
-        }
-
-        return slots;
-    }
-
     public List<LocalTime> getAvailableSlots(LocalDate date) {
         List<LocalTime> available = new ArrayList<>();
         DayOfWeek day = date.getDayOfWeek();

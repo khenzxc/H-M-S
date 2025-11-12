@@ -26,6 +26,7 @@ public class Menu {
             System.out.println("[4] Treatment Records & History");
             System.out.println("[5] Summary and Reports");
             System.out.println("[6] Search & Sort Patients/Doctors");
+            System.out.println("[0] Exit");
             System.out.print("Select option: ");
             String choice = sc.nextLine();
 
@@ -126,7 +127,8 @@ public class Menu {
             }
         }
     }
-        private void reportsMenu() {
+
+    private void reportsMenu() {
         while (true) {
             System.out.println("\n--- SUMMARY AND REPORTS ---");
             System.out.println("[1] Patient Masterlist (Filterable)");
@@ -142,7 +144,9 @@ public class Menu {
                 case "2" -> appointmentManager.viewDailySchedule();
                 case "3" -> appointmentManager.viewUpcomingAppointments();
                 case "4" -> treatmentManager.viewPatientHistory();
-                case "0" -> { return; }
+                case "0" -> {
+                    return;
+                }
                 default -> System.out.println("Invalid input!");
             }
         }
@@ -174,7 +178,6 @@ public class Menu {
             System.out.println("[1] Linear Search by Name");
             System.out.println("[2] Binary Search by ID");
             System.out.println("[3] Bubble Sort by ID");
-            System.out.println("[4] Quick Sort by Name");
             System.out.println("[0] Back");
             System.out.print("Select option: ");
             String choice = sc.nextLine();
@@ -183,23 +186,26 @@ public class Menu {
                 case "1" -> {
                     System.out.print("Enter patient name to search: ");
                     String name = sc.nextLine();
+                    long start = System.nanoTime();
                     SearchingSorting.linearSearchPatientsByName(patientManager.getPatientList(), name);
+                    long end = System.nanoTime();
+                    double timeMs = (end - start) / 1_000_000.0;
+                    System.out.println("Seatch Time: " + timeMs + " ms");
                 }
                 case "2" -> {
-                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList()); // ensure sorted
+                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList()); 
                     System.out.print("Enter patient ID to search: ");
                     String id = sc.nextLine();
+                    long start = System.nanoTime();
                     Patient p = SearchingSorting.binarySearchPatientById(patientManager.getPatientList(), id);
+                    long end = System.nanoTime();
+                    double timeMs = (end - start) / 1_000_000.0;
                     System.out.println(p != null ? p : "Patient not found with ID: " + id);
+                    System.out.println("Seatch Time: " + timeMs + " ms");
                 }
                 case "3" -> {
                     SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList());
                     System.out.println("Patients after Bubble Sort by ID:");
-                    patientManager.viewAllPatients();
-                }
-                case "4" -> {
-                    SearchingSorting.quickSortPatientsByName(patientManager.getPatientList());
-                    System.out.println("Patients after Quick Sort by Name:");
                     patientManager.viewAllPatients();
                 }
                 case "0" -> {
@@ -216,7 +222,6 @@ public class Menu {
             System.out.println("[1] Linear Search by Name");
             System.out.println("[2] Binary Search by ID");
             System.out.println("[3] Bubble Sort by ID");
-            System.out.println("[4] Quick Sort by Name");
             System.out.println("[0] Back");
             System.out.print("Select option: ");
             String choice = sc.nextLine();
@@ -228,20 +233,19 @@ public class Menu {
                     SearchingSorting.linearSearchDoctorsByName(doctorManager.getDoctorList(), name);
                 }
                 case "2" -> {
-                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList()); // ensure sorted
+                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList()); 
                     System.out.print("Enter doctor ID to search: ");
                     String id = sc.nextLine();
+                    long start = System.nanoTime();
                     Doctor d = SearchingSorting.binarySearchDoctorById(doctorManager.getDoctorList(), id);
+                    long end = System.nanoTime();
+                    double timeMs = (end - start) / 1_000_000.0;
                     System.out.println(d != null ? d : "Doctor not found with ID: " + id);
+                    System.out.println("Searching Time: " + timeMs + " ms");
                 }
                 case "3" -> {
                     SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList());
                     System.out.println("Doctors after Bubble Sort by ID:");
-                    doctorManager.viewAllDoctors();
-                }
-                case "4" -> {
-                    SearchingSorting.quickSortDoctorsByName(doctorManager.getDoctorList());
-                    System.out.println("Doctors after Quick Sort by Name:");
                     doctorManager.viewAllDoctors();
                 }
                 case "0" -> {

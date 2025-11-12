@@ -8,7 +8,7 @@ public class Appointment {
     private String doctorId;
     private String patientId;
     private LocalDateTime dateTime;
-    private boolean priority; // true = emergency
+    private boolean priority; 
     private long insertionOrder; // for FIFO tiebreak
 
     public Appointment(String doctorId, String patientId, LocalDateTime dateTime, boolean priority, long insertionOrder) {
@@ -20,7 +20,7 @@ public class Appointment {
         this.insertionOrder = insertionOrder;
     }
 
-    // ======= GETTERS =======
+    //getters
     public String getAppointmentId() { return appointmentId; }
     public String getDoctorId() { return doctorId; }
     public String getPatientId() { return patientId; }
@@ -28,7 +28,7 @@ public class Appointment {
     public boolean isPriority() { return priority; }
     public long getInsertionOrder() { return insertionOrder; }
 
-    // ======= SETTERS =======
+    //setters
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
@@ -45,7 +45,7 @@ public class Appointment {
         this.priority = priority;
     }
 
-    // ======= TO STRING =======
+    //toString
   @Override
 public String toString() {
     return "AppointmentID: " + appointmentId +
