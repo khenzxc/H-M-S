@@ -245,10 +245,8 @@ public class AppointmentManager {
     }
 
     public void rescheduleAppointment() {
-
-        // Step 1: Ask for Appointment ID
         System.out.print("Enter Appointment ID to reschedule: ");
-        String apptId = sc.nextLine();
+        String apptId = sc.nextLine().trim();
 
         Appointment target = null;
         for (Appointment a : allRecords) {
@@ -263,61 +261,108 @@ public class AppointmentManager {
             return;
         }
 
-        Doctor doctor = findDoctorById(target.getDoctorId());
-        if (doctor == null) {
-            System.out.println("Doctor not found.");
+        Doctor originalDoctor = findDoctorById(target.getDoctorId());
+        if (originalDoctor == null) {
+            System.out.println("Original doctor not found.");
             return;
         }
 
-        // Step 2: Remove the appointment temporarily
-        doctor.removeAppointment(target);
+        // Temporarily remove from original doctor's queues
+        originalDoctor.removeAppointment(target);
 
-        // Step 3: Ask for new date
+        // Ask for new date
         System.out.print("Enter new appointment date (YYYY-MM-DD): ");
-        String dateInput = sc.nextLine();
+        String dateInput = sc.nextLine().trim();
         LocalDate newDate;
         try {
             newDate = LocalDate.parse(dateInput);
         } catch (Exception e) {
             System.out.println("Invalid date format.");
             // Re-add the original appointment before returning
-            doctor.enqueueAppointment(target);
+            originalDoctor.enqueueAppointment(target);
             return;
         }
 
-        // Step 4: Show available slots for that date
-        List<LocalTime> availableSlots = doctor.getAvailableSlots(newDate);
+        // Find doctors with available slots on that date
+        List<Doctor> availableDoctors = new ArrayList<>();
+        for (Doctor d : doctorManager.getDoctorList()) {
+            List<LocalTime> slots = d.getAvailableSlots(newDate);
+            if (slots != null && !slots.isEmpty()) availableDoctors.add(d);
+        }
+
+        if (availableDoctors.isEmpty()) {
+            System.out.println("No doctors available on " + newDate + ". Reverting appointment.");
+            originalDoctor.enqueueAppointment(target);
+            return;
+        }
+
+        // Show available doctors
+        System.out.println("\n--- Doctors available on " + newDate + " ---");
+        for (Doctor d : availableDoctors) {
+            System.out.println(d.getDoctorId() + " | " + d.getFullName());
+        }
+
+        System.out.print("Enter Doctor ID to assign (or press Enter to keep original doctor " + originalDoctor.getDoctorId() + "): ");
+        String chosenDocId = sc.nextLine().trim();
+        Doctor chosenDoctor = null;
+
+        if (chosenDocId.isEmpty()) {
+            chosenDoctor = originalDoctor;
+        } else {
+            for (Doctor d : availableDoctors) {
+                if (d.getDoctorId().equalsIgnoreCase(chosenDocId)) {
+                    chosenDoctor = d;
+                    break;
+                }
+            }
+            if (chosenDoctor == null) {
+                System.out.println("Invalid doctor selection. Reverting appointment.");
+                originalDoctor.enqueueAppointment(target);
+                return;
+            }
+        }
+
+        // Show available slots for chosen doctor
+        List<LocalTime> availableSlots = chosenDoctor.getAvailableSlots(newDate);
         if (availableSlots.isEmpty()) {
-            System.out.println("No available slots on this date.");
-            // Re-add the original appointment
-            doctor.enqueueAppointment(target);
+            System.out.println("No available slots for selected doctor. Reverting appointment.");
+            originalDoctor.enqueueAppointment(target);
             return;
         }
 
-        System.out.println("Available slots for " + doctor.getFullName() + " on " + newDate + ":");
+        System.out.println("Available slots for " + chosenDoctor.getFullName() + " on " + newDate + ":");
         for (int i = 0; i < availableSlots.size(); i++) {
             System.out.println((i + 1) + ". " + availableSlots.get(i));
         }
 
         System.out.print("Select slot number: ");
-        int choice = sc.nextInt();
-        sc.nextLine();
-
-        if (choice < 1 || choice > availableSlots.size()) {
-            System.out.println("❌ Invalid choice.");
-            // Re-add the original appointment
-            doctor.enqueueAppointment(target);
+        int choice;
+        try {
+            choice = Integer.parseInt(sc.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Reverting appointment.");
+            originalDoctor.enqueueAppointment(target);
             return;
         }
 
-        // Step 5: Set new datetime and re-add to doctor queue
+        if (choice < 1 || choice > availableSlots.size()) {
+            System.out.println("Invalid choice. Reverting appointment.");
+            originalDoctor.enqueueAppointment(target);
+            return;
+        }
+
+        // Apply changes and enqueue to chosen doctor
         LocalTime newTime = availableSlots.get(choice - 1);
         LocalDateTime newDateTime = LocalDateTime.of(newDate, newTime);
         target.setDateTime(newDateTime);
-        doctor.enqueueAppointment(target);
+
+        // If doctor changed, update doctorId
+        target.setDoctorId(chosenDoctor.getDoctorId());
+
+        chosenDoctor.enqueueAppointment(target);
 
         System.out.println("Appointment rescheduled successfully!");
-        System.out.println("Doctor: " + doctor.getFullName() + " | Patient: " + target.getPatientId()
+        System.out.println("Doctor: " + chosenDoctor.getFullName() + " | Patient: " + target.getPatientId()
                 + " | Date & Time: " + target.getDateTime());
     }
 
