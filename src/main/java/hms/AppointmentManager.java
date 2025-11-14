@@ -30,7 +30,7 @@ public class AppointmentManager {
             return;
         }
 
-        boolean isEmergency = patient.getPriorityLevel() == 1; // automatic
+        boolean isEmergency = patient.getPriorityLevel() == 1;
         LocalDate selectedDate = null;
 
         if (!isEmergency) {
@@ -186,7 +186,6 @@ public class AppointmentManager {
         }
     }
 
-    // Helper to calculate queue number
     private int getQueueNumber(Doctor doctor, Appointment appt) {
         int pos = 1;
         for (Appointment a : doctor.getEmergencyQueue()) {
@@ -199,10 +198,9 @@ public class AppointmentManager {
                 return pos;
             pos++;
         }
-        return -1; // not found
+        return -1;
     }
 
-    /* ---------------------- 3. Serve Appointment ---------------------- */
     public void serveAppointment() {
         doctorManager.viewAllDoctors();
         System.out.print("Enter Doctor ID to serve: ");
@@ -222,7 +220,6 @@ public class AppointmentManager {
         }
     }
 
-    /* ---------------------- 4. Cancel Appointment ---------------------- */
     public void cancelAppointment() {
         System.out.print("Enter Appointment ID to cancel: ");
         String appointmentId = sc.nextLine().trim();
@@ -247,7 +244,6 @@ public class AppointmentManager {
             System.out.println("No appointment found with Appointment ID: " + appointmentId);
     }
 
-    /* ---------------------- 5. Reschedule Appointment ---------------------- */
     public void rescheduleAppointment() {
 
         // Step 1: Ask for Appointment ID
@@ -325,9 +321,6 @@ public class AppointmentManager {
                 + " | Date & Time: " + target.getDateTime());
     }
 
-    /*
-     * ---------------------- View All Scheduled Appointments ----------------------
-     */
     public void viewAllAppointments() {
         System.out.println("\n=== All Scheduled Appointments ===");
 
@@ -338,6 +331,8 @@ public class AppointmentManager {
 
             if (allAppts.isEmpty())
                 continue;
+
+            allAppts.sort(Comparator.comparing(Appointment::getDateTime));
 
             System.out.println("\n--- Doctor: " + doctor.getFullName() + " ---");
             int counter = 1;
@@ -369,6 +364,7 @@ public class AppointmentManager {
         }
         return null;
     }
+
     public void viewDailySchedule() {
         LocalDate today = LocalDate.now();
         System.out.println("\n=== DAILY SCHEDULE for " + today + " ===");

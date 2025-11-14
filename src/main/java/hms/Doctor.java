@@ -9,14 +9,12 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
-    private List<String> schedule = new ArrayList<>(); //["MON 12:00-18:00", "WED 07:00-12:00"]
+    private List<String> schedule = new ArrayList<>(); 
     private boolean active = true;
 
     // Queues per doctor
     private Queue<Appointment> normalQueue;
     private PriorityQueue<Appointment> emergencyQueue;
-
-    // List of all booked appointments3
 
     private List<Appointment> appointments = new ArrayList<>();
 
@@ -233,7 +231,7 @@ public class Doctor {
                 " | Queue -> Normal: " + normalQueue.size() +
                 ", Emergency: " + emergencyQueue.size();
     }
-
+    //USELESS METHOD FOR NOW - TO BE USED IN FUTURE FEATURES
     public String getNextAppointmentWithQueue() {
         if (!emergencyQueue.isEmpty()) {
             Appointment next = emergencyQueue.peek();
