@@ -103,7 +103,7 @@ public class DoctorManager {
         Doctor found = findDoctorById(id);
 
         if (found == null) {
-            System.out.println("⚠️ Doctor not found!");
+            System.out.println("Doctor not found!");
             return;
         }
 
@@ -154,6 +154,28 @@ public class DoctorManager {
             System.out.println("Doctor deleted successfully!");
         } else {
             System.out.println("Deletion canceled.");
+        }
+    }
+
+    public void apptPerDoctor() {
+        System.out.print("Enter Doctor ID to view appointments: ");
+        String id = sc.nextLine().trim();
+        Doctor found = findDoctorById(id);
+
+        if (found == null) {
+            System.out.println("Doctor not found!");
+            return;
+        }
+
+        List<Appointment> apps = found.getAppointments();
+        if (apps.isEmpty()) {
+            System.out.println("No appointments found for Dr. " + found.getFullName());
+            return;
+        }
+
+        System.out.println("\n--- Appointments for Dr. " + found.getFullName() + " ---");
+        for (Appointment a : apps) {
+            System.out.println(a);
         }
     }
 

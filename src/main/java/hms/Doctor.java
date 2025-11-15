@@ -12,11 +12,10 @@ public class Doctor {
     private List<String> schedule = new ArrayList<>(); 
     private boolean active = true;
 
-    // Queues per doctor
     private Queue<Appointment> normalQueue;
     private PriorityQueue<Appointment> emergencyQueue;
 
-    private List<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointments;
 
     public Doctor(String id, String fn, String ln, String spec) {
         this.doctorId = id;
@@ -141,7 +140,6 @@ public class Doctor {
         return available;
     }
 
-    /* ---------------------- Appointment Queues ---------------------- */
     public void enqueueAppointment(Appointment a) {
         appointments.add(a);
         if (a.isPriority())
@@ -166,7 +164,6 @@ public class Doctor {
         return !(normalQueue.isEmpty() && emergencyQueue.isEmpty());
     }
 
-    /* ---------------------- Appointment Removal ---------------------- */
     public boolean removeAppointment(Appointment a) {
         if (a == null)
             return false;

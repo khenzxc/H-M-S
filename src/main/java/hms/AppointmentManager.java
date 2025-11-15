@@ -232,11 +232,11 @@ public class AppointmentManager {
             if (a.getAppointmentId().equalsIgnoreCase(appointmentId)) {
                 Doctor d = findDoctorById(a.getDoctorId());
                 if (d != null)
-                    d.removeAppointment(a); // remove from doctor's queues
-                it.remove(); // remove from global records
+                    d.removeAppointment(a); 
+                it.remove(); 
                 found = true;
                 System.out.println("Appointment cancelled for Appointment ID: " + appointmentId);
-                break; // appointment IDs are unique, so we can stop here
+                break; 
             }
         }
 

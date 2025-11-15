@@ -9,7 +9,7 @@ public class Appointment {
     private String patientId;
     private LocalDateTime dateTime;
     private boolean priority; 
-    private long insertionOrder; // for FIFO tiebreak
+    private long insertionOrder; 
 
     public Appointment(String doctorId, String patientId, LocalDateTime dateTime, boolean priority, long insertionOrder) {
         this.appointmentId = String.format("A%04d", counter++);

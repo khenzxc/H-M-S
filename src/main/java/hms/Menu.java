@@ -56,6 +56,7 @@ public class Menu {
             System.out.println("[3] View Patient Profile");
             System.out.println("[4] Update Patient Info");
             System.out.println("[5] Delete Patient");
+            System.out.println("[6] View Archived Patients");
             System.out.println("[0] Back to Main Menu");
             System.out.print("Enter choice: ");
             String c = sc.nextLine();
@@ -66,6 +67,7 @@ public class Menu {
                 case "3" -> patientManager.viewSinglePatient();
                 case "4" -> patientManager.updatePatient();
                 case "5" -> patientManager.deletePatient();
+                case "6" -> patientManager.viewArchivedPatients();
                 case "0" -> {
                     return;
                 }
@@ -80,8 +82,9 @@ public class Menu {
             System.out.println("\n--- DOCTOR MANAGEMENT ---");
             System.out.println("[1] Register Doctor");
             System.out.println("[2] View All Doctors");
-            System.out.println("[3] Edit Doctor");
-            System.out.println("[4] Delete Doctor");
+            System.out.println("[3] View Appointments Per Doctor");
+            System.out.println("[4] Edit Doctor");
+            System.out.println("[5] Delete Doctor");
             System.out.println("[0] Back to Main Menu");
             System.out.print("Enter choice: ");
             String c = sc.nextLine();
@@ -89,8 +92,9 @@ public class Menu {
             switch (c) {
                 case "1" -> doctorManager.addDoctor();
                 case "2" -> doctorManager.viewAllDoctors();
-                case "3" -> doctorManager.editDoctor();
-                case "4" -> doctorManager.deleteDoctor();
+                case "3" -> doctorManager.apptPerDoctor();
+                case "4" -> doctorManager.editDoctor();
+                case "5" -> doctorManager.deleteDoctor();
                 case "0" -> {
                     return;
                 }
@@ -193,7 +197,7 @@ public class Menu {
                     System.out.println("Seatch Time: " + timeMs + " ms");
                 }
                 case "2" -> {
-                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList()); 
+                    SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList());
                     System.out.print("Enter patient ID to search: ");
                     String id = sc.nextLine();
                     long start = System.nanoTime();
@@ -201,10 +205,14 @@ public class Menu {
                     long end = System.nanoTime();
                     double timeMs = (end - start) / 1_000_000.0;
                     System.out.println(p != null ? p : "Patient not found with ID: " + id);
-                    System.out.println("Seatch Time: " + timeMs + " ms");
+                    System.out.println("Binary Searching Time: " + timeMs + " ms");
                 }
                 case "3" -> {
+                    long start = System.nanoTime();
                     SearchingSorting.bubbleSortPatientsById(patientManager.getPatientList());
+                    long end = System.nanoTime();
+                    double timeMs = (end) / 1_000_000.0;
+                    System.out.println("Bubble Sorting Time: " + timeMs + " ms");
                     System.out.println("Patients after Bubble Sort by ID:");
                     patientManager.viewAllPatients();
                 }
@@ -233,7 +241,7 @@ public class Menu {
                     SearchingSorting.linearSearchDoctorsByName(doctorManager.getDoctorList(), name);
                 }
                 case "2" -> {
-                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList()); 
+                    SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList());
                     System.out.print("Enter doctor ID to search: ");
                     String id = sc.nextLine();
                     long start = System.nanoTime();
@@ -241,7 +249,7 @@ public class Menu {
                     long end = System.nanoTime();
                     double timeMs = (end - start) / 1_000_000.0;
                     System.out.println(d != null ? d : "Doctor not found with ID: " + id);
-                    System.out.println("Searching Time: " + timeMs + " ms");
+                    System.out.println("Binary Searching Time: " + timeMs + " ms");
                 }
                 case "3" -> {
                     SearchingSorting.bubbleSortDoctorsById(doctorManager.getDoctorList());

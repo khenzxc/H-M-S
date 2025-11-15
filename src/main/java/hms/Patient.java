@@ -46,7 +46,6 @@ public class Patient {
         this.updatedAt = LocalDate.now();
     }
 
-    // Minimal constructor (required fields)
     public Patient(String patientId, String firstName, String lastName, LocalDate dob) {
         this(patientId, firstName, lastName, dob, "", "", "", null, null, null, null, 0);
     }
@@ -128,6 +127,11 @@ public class Patient {
         updateTimestamp();
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+        updateTimestamp();
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
         updateTimestamp();
@@ -205,20 +209,54 @@ public class Patient {
     @Override
     public String toString() {
         String prio = (priorityLevel == 1) ? "URGENT" : "NORMAL";
-        return patientId + " | " + getFullName() + " | Age: " + getAge() +
-                " | Gender: " + gender + " | Contact: " + contact + " | Address: " + address +
-                " | Blood: " + (bloodType != null ? bloodType : "N/A") +
-                " | Priority: " + prio;
+        String status = active ? "ACTIVE" : "INACTIVE";
+
+        return String.format(
+                "%-6s | %-20s | %-3d | %-6s | %-6s | %-7s | %-8s",
+                patientId,
+                getFullName(),
+                getAge(),
+                gender,
+                (bloodType != null ? bloodType : "N/A"),
+                prio,
+                status);
     }
 
     public String toFullProfileString() {
-        return this.toString() +
-                "\nDate of Birth: " + dob +
-                "\nAllergies: " + (allergies.isEmpty() ? "None" : allergies) +
-                "\nCurrent Medications: " + (currentMedications.isEmpty() ? "None" : currentMedications) +
-                "\nMedical History: " + (medicalHistory.isEmpty() ? "None" : medicalHistory) +
-                "\nActive: " + active +
-                "\nCreated: " + createdAt + " | Updated: " + updatedAt;
+        String prio = (priorityLevel == 1) ? "URGENT" : "NORMAL";
+        String status = active ? "ACTIVE" : "INACTIVE";
+
+        return String.format(
+                "Patient ID   : %s\n" +
+                        "Full Name    : %s\n" +
+                        "Age          : %d\n" +
+                        "Gender       : %s\n" +
+                        "Contact      : %s\n" +
+                        "Address      : %s\n" +
+                        "Blood Type   : %s\n" +
+                        "Priority     : %s\n" +
+                        "Status       : %s\n" +
+                        "Date of Birth: %s\n" +
+                        "Allergies    : %s\n" +
+                        "Medications  : %s\n" +
+                        "Medical Hist.: %s\n" +
+                        "Created      : %s\n" +
+                        "Updated      : %s",
+                patientId,
+                getFullName(),
+                getAge(),
+                gender,
+                contact,
+                address,
+                (bloodType != null ? bloodType : "N/A"),
+                prio,
+                status,
+                dob,
+                (allergies.isEmpty() ? "None" : allergies),
+                (currentMedications.isEmpty() ? "None" : currentMedications),
+                (medicalHistory.isEmpty() ? "None" : medicalHistory),
+                createdAt,
+                updatedAt);
     }
 
 }

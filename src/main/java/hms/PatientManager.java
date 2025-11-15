@@ -6,14 +6,15 @@ import java.util.Scanner;
 
 public class PatientManager {
     private LinkedList<Patient> patientList;
+    private LinkedList<Patient> patientArchive;
     private int nextId = 1;
     private final Scanner sc = new Scanner(System.in);
 
     public PatientManager() {
         patientList = new LinkedList<>();
+        patientArchive = new LinkedList<>();
     }
 
-    // Seed sample data
     public void seedData() {
         patientList.add(new Patient("P0001", "Khen", "Gabriel", LocalDate.of(2006, 3, 25)));
         patientList.add(new Patient("P0002", "Ellaine", "Romero", LocalDate.of(2006, 2, 14)));
@@ -27,7 +28,6 @@ public class PatientManager {
         nextId = 9;
     }
 
-    /* ---------------- REGISTER PATIENT ---------------- */
     public void registerPatient() {
         System.out.println("\n--- Register Patient ---");
         System.out.print("First Name: ");
@@ -47,7 +47,6 @@ public class PatientManager {
             return;
         }
 
-        // Check duplicate
         for (Patient p : patientList) {
             if (p.getFirstName().equalsIgnoreCase(fn) &&
                     p.getLastName().equalsIgnoreCase(ln) &&
@@ -88,7 +87,6 @@ public class PatientManager {
         System.out.println(p);
     }
 
-    /* ---------------- VIEW ALL PATIENTS ---------------- */
     public void viewAllPatientsPaginated() {
         if (patientList.isEmpty()) {
             System.out.println("No patients found.");
@@ -99,7 +97,7 @@ public class PatientManager {
         int total = patientList.size();
         int totalPages = total / pageSize;
         if (total % pageSize != 0)
-            totalPages++; // extra page if remainder
+            totalPages++;
         int currentPage = 1;
 
         while (true) {
@@ -109,10 +107,10 @@ public class PatientManager {
                 end = total;
 
             System.out.println("\n-- Patients (Page " + currentPage + " of " + totalPages + ") --");
-            System.out.println("ID | Name | Age | Sex | Blood | Pri");
-            System.out.println("------------------------------------");
+            System.out.printf("%-6s | %-20s | %-3s | %-6s | %-6s | %-7s | %-8s%n",
+                    "ID", "Name", "Age", "Sex", "Blood", "Pri", "Status");
+            System.out.println("----------------------------------------------------------------------");
 
-            // Use toString() instead of printBrief
             for (int i = start; i < end; i++) {
                 System.out.println(patientList.get(i).toString());
             }
@@ -157,7 +155,6 @@ public class PatientManager {
             System.out.println(p);
     }
 
-    /* ---------------- VIEW SINGLE PATIENT ---------------- */
     public void viewSinglePatient() {
         System.out.print("Enter Patient ID: ");
         Patient found = findPatientById(sc.nextLine().trim());
@@ -169,7 +166,6 @@ public class PatientManager {
         System.out.println(found.toFullProfileString());
     }
 
-    /* ---------------- UPDATE PATIENT ---------------- */
     public void updatePatient() {
         System.out.print("Enter Patient ID: ");
         Patient found = findPatientById(sc.nextLine().trim());
@@ -212,25 +208,112 @@ public class PatientManager {
 
     }
 
-    /* ---------------- DELETE PATIENT ---------------- */
     public void deletePatient() {
         System.out.print("Enter Patient ID: ");
         Patient found = findPatientById(sc.nextLine().trim());
+
         if (found == null) {
             System.out.println("Patient not found!");
             return;
         }
 
-        System.out.print("Are you sure to delete " + found.getFullName() + "? (y/n): ");
+        System.out.print("Are you sure to archive/delete " + found.getFullName() + "? (y/n): ");
         if (sc.nextLine().equalsIgnoreCase("y")) {
+
+            found.setActive(false);
+
+            patientArchive.add(found);
+
             patientList.remove(found);
-            System.out.println("Patient deleted.");
+
+            System.out.println("Patient archived. Status set to INACTIVE.");
         } else {
             System.out.println("Cancelled.");
         }
     }
 
-    /* ---------------- FIND BY ID ---------------- */
+    public void restorePatientById(String id) {
+        Patient p = findArchivedPatientById(id);
+        if (p == null) {
+            System.out.println("Archived patient not found.");
+            return;
+        }
+
+        p.setActive(true);
+        patientArchive.remove(p);
+        patientList.add(p);
+
+        System.out.println("Patient " + p.getFullName() + " restored successfully!");
+    }
+
+    public Patient findArchivedPatientById(String id) {
+        for (Patient p : patientArchive) {
+            if (p.getPatientId().equalsIgnoreCase(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void viewArchivedPatients() {
+        if (patientArchive.isEmpty()) {
+            System.out.println("No archived patients.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\n-- Archived Patients --");
+            System.out.printf("%-6s | %-20s | %-3s | %-6s | %-6s | %-7s | %-8s%n",
+                    "ID", "Name", "Age", "Sex", "Blood", "Pri", "Status");
+            System.out.println("----------------------------------------------------------------------");
+
+            for (Patient p : patientArchive) {
+                String prio = p.getPriorityLevel() == 1 ? "URGENT" : "NORMAL";
+                String status = p.isActive() ? "ACTIVE" : "INACTIVE";
+
+                System.out.printf("%-6s | %-20s | %-3d | %-6s | %-6s | %-7s | %-8s%n",
+                        p.getPatientId(),
+                        p.getFullName(),
+                        p.getAge(),
+                        p.getGender(),
+                        (p.getBloodType() != null ? p.getBloodType() : "N/A"),
+                        prio,
+                        status);
+            }
+
+            System.out.println("\n[V <ID>] View Full | [R <ID>] Restore | [Q] Quit");
+            System.out.print("Choice: ");
+            String line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Q")) {
+                return;
+            } else if (line.toUpperCase().startsWith("V ")) {
+                String[] parts = line.split("\\s+");
+                if (parts.length >= 2) {
+                    Patient found = findArchivedPatientById(parts[1]);
+                    if (found != null) {
+                        System.out.println("\n--- FULL PROFILE ---");
+                        System.out.println(found.toFullProfileString());
+                    } else {
+                        System.out.println("Patient not found in archive.");
+                    }
+                }
+            } else if (line.toUpperCase().startsWith("R ")) {
+                String[] parts = line.split("\\s+");
+                if (parts.length >= 2) {
+                    restorePatientById(parts[1]);
+                    // If archive becomes empty after restore, exit method
+                    if (patientArchive.isEmpty()) {
+                        System.out.println("No archived patients remaining.");
+                        return;
+                    }
+                }
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        }
+    }
+
     public Patient findPatientById(String id) {
         for (Patient p : patientList)
             if (p.getPatientId().equalsIgnoreCase(id))
@@ -242,7 +325,6 @@ public class PatientManager {
         return patientList;
     }
 
-    /* ---------------- FILTER PATIENT MASTERLIST ---------------- */
     public void filterPatientMasterlist() {
         if (patientList.isEmpty()) {
             System.out.println("No patients found.");
@@ -305,13 +387,11 @@ public class PatientManager {
                         System.out.println("Invalid date format.");
                     }
                 }
-
                 case "4" -> viewAllPatients();
 
                 case "0" -> {
-                    return; // back to previous menu
+                    return;
                 }
-
                 default -> System.out.println("Invalid choice. Try again.");
             }
         }
