@@ -19,7 +19,6 @@ public class AppointmentManager {
 
     public void scheduleAppointment() {
 
-        // Show patients
         patientManager.viewAllPatients();
         System.out.print("Enter Patient ID: ");
         String patientId = sc.nextLine().trim();
@@ -34,13 +33,12 @@ public class AppointmentManager {
         LocalDate selectedDate = null;
 
         if (!isEmergency) {
-            // Normal patient → ask for date
+
             System.out.print("Enter appointment date (YYYY-MM-DD): ");
             String dateInput = sc.nextLine().trim();
             try {
                 selectedDate = LocalDate.parse(dateInput);
 
-                // Check if date is in the past
                 if (selectedDate.isBefore(LocalDate.now())) {
                     System.out.println("Cannot schedule an appointment in the past.");
                     return;
@@ -50,11 +48,10 @@ public class AppointmentManager {
                 return;
             }
         } else {
-            // Emergency → today's date only
+
             selectedDate = LocalDate.now();
         }
-
-        // ---------------- Filter doctors based on availability ----------------
+        // Filter doctors with available slots on selected date
         List<Doctor> availableDoctors = new ArrayList<>();
         for (Doctor d : doctorManager.getDoctorList()) {
             List<LocalTime> slots = d.getAvailableSlots(selectedDate);
@@ -69,7 +66,6 @@ public class AppointmentManager {
             return;
         }
 
-        // Show filtered doctors
         System.out.println("\n--- Available Doctors ---");
         for (Doctor d : availableDoctors) {
             System.out.println(d);
@@ -91,7 +87,7 @@ public class AppointmentManager {
             List<LocalTime> todaySlots = doctor.getAvailableSlots(selectedDate);
             dateTime = LocalDateTime.of(selectedDate, todaySlots.get(0));
         } else {
-            // Normal patient → choose slot manually
+            // Normal patient choose slot manually
             List<LocalTime> availableSlots = doctor.getAvailableSlots(selectedDate);
             System.out.println("Available slots:");
             for (int i = 0; i < availableSlots.size(); i++) {
@@ -110,7 +106,6 @@ public class AppointmentManager {
             dateTime = LocalDateTime.of(selectedDate, availableSlots.get(slotChoice - 1));
         }
 
-        // Create appointment
         Appointment appt = new Appointment(
                 doctor.getDoctorId(),
                 patient.getPatientId(),
@@ -127,7 +122,6 @@ public class AppointmentManager {
                 " | " + dateTime + " | Emergency: " + (isEmergency ? "Yes" : "No"));
     }
 
-    /* ---------------------- 2. View Next Appointment ---------------------- */
     public void viewNextAppointment() {
 
         System.out.print("View for (1) Doctor or (2) Patient? Enter 1 or 2: ");
@@ -296,7 +290,6 @@ public class AppointmentManager {
             return;
         }
 
-        // Show available doctors
         System.out.println("\n--- Doctors available on " + newDate + " ---");
         for (Doctor d : availableDoctors) {
             System.out.println(d.getDoctorId() + " | " + d.getFullName());
@@ -322,7 +315,6 @@ public class AppointmentManager {
             }
         }
 
-        // Show available slots for chosen doctor
         List<LocalTime> availableSlots = chosenDoctor.getAvailableSlots(newDate);
         if (availableSlots.isEmpty()) {
             System.out.println("No available slots for selected doctor. Reverting appointment.");
@@ -393,7 +385,6 @@ public class AppointmentManager {
         }
     }
 
-    /* ---------------------- Helper Methods ---------------------- */
     private Doctor findDoctorById(String id) {
         for (Doctor d : doctorManager.getDoctorList()) {
             if (d.getDoctorId().equalsIgnoreCase(id))

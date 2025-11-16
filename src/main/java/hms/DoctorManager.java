@@ -39,10 +39,8 @@ public class DoctorManager {
     }
 
     /*
-     * ---------------------------------------------------
      * PARSE SCHEDULE INPUT
      * Example input: MON 12:00-18:00, WED 07:00-12:00
-     * ---------------------------------------------------
      */
     private void parseSchedule(String input, Doctor doc) {
         String[] parts = input.split(",");
@@ -180,9 +178,8 @@ public class DoctorManager {
     }
 
     public void seedDoctors() {
-        Doctor d1 = new Doctor(String.format("D%04d", nextId++), "Anna", "Santos", "Cardiology");
-        d1.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(11, 0));
-        d1.addSchedule("WED", LocalTime.of(9, 0), LocalTime.of(17, 0));
+        Doctor d1 = new Doctor(String.format("D%04d", nextId++), "Alice", "Santos", "General Medicine");
+        d1.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(17, 0));
 
         Doctor d2 = new Doctor(String.format("D%04d", nextId++), "Mark", "Reyes", "Pediatrics");
         d2.addSchedule("TUE", LocalTime.of(10, 0), LocalTime.of(16, 0));

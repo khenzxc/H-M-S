@@ -32,7 +32,6 @@ public class Doctor {
         this.appointments = new ArrayList<>();
     }
 
-    /* ---------------------- Getters & Setters ---------------------- */
     public String getDoctorId() {
         return doctorId;
     }
@@ -93,7 +92,6 @@ public class Doctor {
         schedule.clear();
     }
 
-    /* ---------------------- Schedule Handling ---------------------- */
     public void addSchedule(String scheduleText) {
         schedule.clear();
         String[] parts = scheduleText.split(",");
