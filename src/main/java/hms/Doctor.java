@@ -23,10 +23,8 @@ public class Doctor {
         this.lastName = ln;
         this.specialization = spec;
 
-        // Emergency queue sorted by appointment datetime (earliest first)
+        //kailangan nya ng comparator kase custom object yung Appointment para ma sort
         this.emergencyQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
-
-        // Normal queue also sorted by appointment datetime
         this.normalQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
 
         this.appointments = new ArrayList<>();
@@ -226,35 +224,5 @@ public class Doctor {
                 " | Queue -> Normal: " + normalQueue.size() +
                 ", Emergency: " + emergencyQueue.size();
     }
-    //USELESS METHOD FOR NOW - TO BE USED IN FUTURE FEATURES
-    public String getNextAppointmentWithQueue() {
-        if (!emergencyQueue.isEmpty()) {
-            Appointment next = emergencyQueue.peek();
-            int position = getQueuePosition(next);
-            return "Queue #" + position + " | " + next;
-        } else if (!normalQueue.isEmpty()) {
-            Appointment next = normalQueue.peek();
-            int position = getQueuePosition(next);
-            return "Queue #" + position + " | " + next;
-        } else {
-            return "No pending appointments.";
-        }
-    }
-
-    // Get queue number for an appointment
-    private int getQueuePosition(Appointment appt) {
-        // Combine all appointments in both queues
-        List<Appointment> allPending = new ArrayList<>();
-        allPending.addAll(emergencyQueue);
-        allPending.addAll(normalQueue);
-        // Sort by dateTime ascending
-        allPending.sort(Comparator.comparing(Appointment::getDateTime));
-        for (int i = 0; i < allPending.size(); i++) {
-            if (allPending.get(i).equals(appt)) {
-                return i + 1; // Queue number starts at 1
-            }
-        }
-        return -1; // not found
-    }
-
+  
 }

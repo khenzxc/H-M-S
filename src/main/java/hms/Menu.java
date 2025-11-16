@@ -47,7 +47,6 @@ public class Menu {
         }
     }
 
-    /* ===================== PATIENT MENU ===================== */
     private void patientMenu() {
         while (true) {
             System.out.println("\n--- PATIENT MANAGEMENT ---");
@@ -76,7 +75,6 @@ public class Menu {
         }
     }
 
-    /* ===================== DOCTOR MENU ===================== */
     private void doctorMenu() {
         while (true) {
             System.out.println("\n--- DOCTOR MANAGEMENT ---");
@@ -103,7 +101,6 @@ public class Menu {
         }
     }
 
-    /* ===================== APPOINTMENT MENU ===================== */
     private void appointmentMenu() {
         while (true) {
             System.out.println("\n--- APPOINTMENT SCHEDULING ---");

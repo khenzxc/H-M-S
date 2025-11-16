@@ -113,7 +113,6 @@ public class AppointmentManager {
                 isEmergency,
                 insertionCounter++);
 
-        // Enqueue appointment
         doctor.enqueueAppointment(appt);
         allRecords.add(appt);
 
@@ -261,10 +260,8 @@ public class AppointmentManager {
             return;
         }
 
-        // Temporarily remove from original doctor's queues
         originalDoctor.removeAppointment(target);
 
-        // Ask for new date
         System.out.print("Enter new appointment date (YYYY-MM-DD): ");
         String dateInput = sc.nextLine().trim();
         LocalDate newDate;
@@ -272,12 +269,16 @@ public class AppointmentManager {
             newDate = LocalDate.parse(dateInput);
         } catch (Exception e) {
             System.out.println("Invalid date format.");
-            // Re-add the original appointment before returning
             originalDoctor.enqueueAppointment(target);
             return;
         }
 
-        // Find doctors with available slots on that date
+        if(newDate.isBefore(LocalDate.now())) {
+            System.out.println("Cannot reschedule to a past date.");
+            originalDoctor.enqueueAppointment(target);
+            return;
+        }
+
         List<Doctor> availableDoctors = new ArrayList<>();
         for (Doctor d : doctorManager.getDoctorList()) {
             List<LocalTime> slots = d.getAvailableSlots(newDate);
@@ -343,12 +344,10 @@ public class AppointmentManager {
             return;
         }
 
-        // Apply changes and enqueue to chosen doctor
         LocalTime newTime = availableSlots.get(choice - 1);
         LocalDateTime newDateTime = LocalDateTime.of(newDate, newTime);
         target.setDateTime(newDateTime);
 
-        // If doctor changed, update doctorId
         target.setDoctorId(chosenDoctor.getDoctorId());
 
         chosenDoctor.enqueueAppointment(target);
@@ -412,7 +411,6 @@ public class AppointmentManager {
             allAppts.addAll(doctor.getEmergencyQueue());
             allAppts.addAll(doctor.getNormalQueue());
 
-            // Filter appointments for today
             List<Appointment> todays = new ArrayList<>();
             for (Appointment a : allAppts) {
                 if (a.getDateTime().toLocalDate().equals(today)) {
@@ -463,7 +461,6 @@ public class AppointmentManager {
             allAppts.addAll(doctor.getEmergencyQueue());
             allAppts.addAll(doctor.getNormalQueue());
 
-            // Filter appointments between today and N days later
             List<Appointment> upcoming = new ArrayList<>();
             for (Appointment a : allAppts) {
                 LocalDate apptDate = a.getDateTime().toLocalDate();
