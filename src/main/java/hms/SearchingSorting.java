@@ -25,7 +25,7 @@ public class SearchingSorting {
 
         for (Doctor d : doctors) {
             if (d.getFullName().toLowerCase().contains(name)) {
-                System.out.println(d);
+                System.out.println(d.toFullProfile());
                 found = true;
             }
         }

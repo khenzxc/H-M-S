@@ -487,4 +487,22 @@ public class AppointmentManager {
             System.out.println("No appointments found in the next " + daysAhead + " days.");
     }
 
+    public void displayAllAppointments() {
+        if (allRecords.isEmpty()) {
+            System.out.println("No appointments scheduled.");
+            return;
+        }
+
+        System.out.println("\n=== All Appointments ===");
+        for (Appointment appt : allRecords) {
+            Doctor doc = findDoctorById(appt.getDoctorId());
+            Patient pat = findPatientById(appt.getPatientId());
+            System.out.println("Appointment ID: " + appt.getAppointmentId()
+                    + " | Doctor: " + (doc != null ? doc.getFullName() : "Unknown")
+                    + " | Patient: " + (pat != null ? pat.getFullName() : "Unknown")
+                    + " | Date & Time: " + appt.getDateTime()
+                    + " | Emergency: " + (appt.isPriority() ? "Yes" : "No"));
+        }
+    }
+
 }

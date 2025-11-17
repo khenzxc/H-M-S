@@ -177,6 +177,20 @@ public class DoctorManager {
         }
     }
 
+    public void viewDoctorProfile() {
+        System.out.print("Enter Doctor ID to view profile: ");
+        String id = sc.nextLine().trim();
+        Doctor found = findDoctorById(id);
+
+        if (found == null) {
+            System.out.println("Doctor not found!");
+            return;
+        }
+
+        System.out.println("\n--- Doctor Profile ---");
+        System.out.println(found.toFullProfile());
+    }
+
     public void seedDoctors() {
         Doctor d1 = new Doctor(String.format("D%04d", nextId++), "Alice", "Santos", "General Medicine");
         d1.addSchedule("MON", LocalTime.of(9, 0), LocalTime.of(17, 0));

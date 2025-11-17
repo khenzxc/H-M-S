@@ -9,7 +9,7 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
-    private List<String> schedule = new ArrayList<>(); 
+    private List<String> schedule = new ArrayList<>();
     private boolean active = true;
 
     private Queue<Appointment> normalQueue;
@@ -23,7 +23,7 @@ public class Doctor {
         this.lastName = ln;
         this.specialization = spec;
 
-        //kailangan nya ng comparator kase custom object yung Appointment para ma sort
+        // kailangan nya ng comparator kase custom object yung Appointment para ma sort
         this.emergencyQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
         this.normalQueue = new PriorityQueue<>(Comparator.comparing(Appointment::getDateTime));
 
@@ -223,6 +223,20 @@ public class Doctor {
                 " | Appointments: " + appointments.size() +
                 " | Queue -> Normal: " + normalQueue.size() +
                 ", Emergency: " + emergencyQueue.size();
+
     }
-  
+
+    public String toFullProfile() {
+        return  "\n---Doctor Profile-------------\n" +
+                "Doctor ID: " + doctorId + "\n" +
+                "Name: " + getFullName() + "\n" +
+                "Specialization: " + specialization + "\n" +
+                "Schedule: " + schedule + "\n" +
+                "Total Appointments: " + appointments.size() + "\n" +
+                "Normal Queue Size: " + normalQueue.size() + "\n" +
+                "Emergency Queue Size: " + emergencyQueue.size() + "\n" +
+                "Status: " + (active ? "ACTIVE" : "INACTIVE") + "\n" +
+                "------------------------------";
+    }
+
 }
